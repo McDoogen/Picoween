@@ -12,6 +12,9 @@ A Collection of Pi PICO projects for Halloween!
 Install CMake and GCC cross compiler
 > sudo apt install cmake gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib
 
+Install GCC Compiler
+> sudo apt install build-essential
+
 Install vscode
 > sudo apt install code
 
