@@ -32,3 +32,5 @@ minicom -b 115200 -o -D /dev/ttyACM0
 
 ## TODO :)
 - Maybe we should just put the pinout diagram here... :P
+- Readme's for subprojects
+- omg... xxd -i dun.wav dun.c .... perfect!
