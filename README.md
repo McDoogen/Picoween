@@ -25,3 +25,10 @@ Install vscode extensions
 
 Select the **GCC arm-none-eabi** kit 
 Configure & Build using the CMake extension
+
+minicom -b 115200 -o -D /dev/ttyACM0
+
+
+
+## TODO :)
+- Maybe we should just put the pinout diagram here... :P
