@@ -6,7 +6,7 @@
 #include "audio/dun.h"
 
 #define AUDIO_OUT_PIN 18
-#define ANALOG_KNOB_PIN 26
+#define PIR_SENSOR_PIN 15
 
 
 // Default clock is 125 MHz
@@ -22,6 +22,8 @@ void audio_wrap() {
 
     if(audio_step < dun_wav_len)
         audio_step++;
+    else
+        audio_step = 0;
 
     float step_percentage = (float)dun_wav[audio_step] / 255.0f;
     pwm_set_chan_level(slice_num, chan_num, WAV_COUNT*step_percentage);
@@ -31,12 +33,12 @@ void audio_wrap() {
 int main() {
     stdio_init_all();
 
-    // Setup ADC on GP26
-    adc_init();
-    adc_gpio_init(ANALOG_KNOB_PIN);
-    adc_select_input(0);
+    // Setup PIR Sensor reading
+    gpio_init(PIR_SENSOR_PIN);
+    gpio_set_dir(PIR_SENSOR_PIN, GPIO_IN);
+    gpio_pull_down(PIR_SENSOR_PIN);
 
-    // Setup PWM on GP18
+    // Setup PWM for the Speaker
     gpio_set_function(AUDIO_OUT_PIN, GPIO_FUNC_PWM);
     // Get the slice and channel numbers for the GPIO pin we are using
     uint slice_num = pwm_gpio_to_slice_num(AUDIO_OUT_PIN);
@@ -64,18 +66,13 @@ int main() {
 
     audio_step = 0;
     while(true) {
-        const float conversion_factor = 3.3f / (1 << 12);
-        uint16_t result = adc_read();
-        float result_percentage = (float)result / (float)0xFFF;
-        // printf("Raw value: 0x%03x, voltage: %f V, percent: %f%\n", result, result * conversion_factor, result_percentage);
-        if(result_percentage > 0.7) {
+        if(gpio_get(PIR_SENSOR_PIN) || audio_step > 0) {
             gpio_put(PICO_DEFAULT_LED_PIN, true);
             pwm_set_enabled(slice_num, true);
-        } else if (result_percentage < 0.3) {
+        } else {
             gpio_put(PICO_DEFAULT_LED_PIN, false);
             pwm_set_enabled(slice_num, false);
             audio_step= 0;
         }
     }
-
 }
